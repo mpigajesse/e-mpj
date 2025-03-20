@@ -1,0 +1,50 @@
+# Framework principal
+Django==5.1.7
+
+# API REST
+djangorestframework>=3.14.0
+
+# Gestion des variables d'environnement
+django-environ>=0.11.0
+python-dotenv>=1.0.0
+
+# Serveur de production
+gunicorn>=21.2.0
+
+# Base de données
+psycopg2-binary>=2.9.0  # PostgreSQL 
+mysqlclient>=2.2.0  # MySQL 
+
+
+
+# Gestion des fichiers et images
+Pillow>=10.0.0  # Manipulation des images
+django-storages>=1.13.2  # Gestion du stockage (AWS S3, Google Cloud, etc.)
+
+# Authentification et sécurité
+django-allauth>=0.61.1  # Authentification sociale (Google, Facebook, etc.)
+djangorestframework-simplejwt>=5.3.1  # Authentification JWT
+django-cors-headers>=4.3.1  # Gestion des CORS
+
+
+# Outils d'administration et debug
+django-debug-toolbar>=4.3.0  # Outil de debug en développement
+django-extensions>=3.2.3  # Extensions utiles pour Django
+
+# Optimisation et performance
+whitenoise>=6.6.0  # Gestion des fichiers statiques en production
+redis>=5.0.1  # Cache et session backend avec Redis
+django-redis>=5.4.0  # Intégration de Redis avec Django
+celery>=5.3.6  # Tâches asynchrones
+flower>=2.0.1  # Monitoring de Celery
+
+
+
+# Internationalisation et gestion des langues
+Babel>=2.14.0  # Traduction et gestion des langues
+django-modeltranslation>=0.18.9  # Traduction des modèles Django
+
+
+# Tests et qualité du code
+pytest-django>=4.8.0  # Tests avec pytest
+coverage>=7.4.1  # Mesure de couverture des tests

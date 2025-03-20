@@ -1,0 +1,180 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ category.name }} - E-MPJ{% endblock %}
+
+{% block content %}
+<div class="bg-white dark:bg-gray-900">
+    <!-- En-tête de la catégorie -->
+    <div class="relative py-16">
+        <!-- Fond avec overlay -->
+        <div class="absolute inset-0 overflow-hidden">
+            {% if category.image %}
+            <img src="{{ category.image.url }}" 
+                 alt="{{ category.name }}" 
+                 class="w-full h-full object-cover">
+            {% endif %}
+            <div class="absolute inset-0 bg-gradient-to-r from-black/80 to-black/40"></div>
+        </div>
+
+        <!-- Contenu -->
+        <div class="relative container mx-auto px-4">
+            <div class="max-w-3xl">
+                <nav class="flex mb-4" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                        <li class="inline-flex items-center">
+                            <a href="{% url 'core:home' %}" class="text-gray-400 hover:text-white">
+                                Accueil
+                            </a>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <a href="{% url 'products:category_list' %}" class="text-gray-400 hover:text-white ml-1 md:ml-2">
+                                    Catégories
+                                </a>
+                            </div>
+                        </li>
+                        <li aria-current="page">
+                            <div class="flex items-center">
+                                <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-400 ml-1 md:ml-2">{{ category.name }}</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+
+                <h1 class="text-4xl font-bold text-white mb-4">{{ category.name }}</h1>
+                {% if category.description %}
+                <p class="text-xl text-gray-300">{{ category.description }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des produits -->
+    <div class="container mx-auto px-4 py-12">
+        <!-- Filtres et tri -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div class="flex items-center space-x-4 mb-4 md:mb-0">
+                <span class="text-gray-700 dark:text-gray-300">Trier par :</span>
+                <select class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md px-4 py-2"
+                        onchange="window.location.href = this.value">
+                    <option value="?sort=-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>Plus récents</option>
+                    <option value="?sort=price" {% if current_sort == 'price' %}selected{% endif %}>Prix croissant</option>
+                    <option value="?sort=-price" {% if current_sort == '-price' %}selected{% endif %}>Prix décroissant</option>
+                    <option value="?sort=name" {% if current_sort == 'name' %}selected{% endif %}>Nom A-Z</option>
+                    <option value="?sort=-name" {% if current_sort == '-name' %}selected{% endif %}>Nom Z-A</option>
+                </select>
+            </div>
+            <p class="text-gray-600 dark:text-gray-400">
+                {{ products.paginator.count }} produit{{ products.paginator.count|pluralize }} trouvé{{ products.paginator.count|pluralize }}
+            </p>
+        </div>
+
+        <!-- Grille de produits -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {% for product in products %}
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-105">
+                <a href="{{ product.get_absolute_url }}" class="block relative aspect-w-1 aspect-h-1">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" 
+                         alt="{{ product.name }}" 
+                         class="w-full h-64 object-cover">
+                    {% else %}
+                    <div class="w-full h-64 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                        <span class="text-gray-400">Image non disponible</span>
+                    </div>
+                    {% endif %}
+                    {% if product.discount_price %}
+                    <div class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-sm font-medium">
+                        -{{ product.get_discount_percentage }}%
+                    </div>
+                    {% endif %}
+                </a>
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                        <a href="{{ product.get_absolute_url }}" class="hover:text-primary-500">
+                            {{ product.name }}
+                        </a>
+                    </h3>
+                    <div class="flex items-baseline mb-2">
+                        {% if product.discount_price %}
+                        <span class="text-lg font-bold text-red-500">{{ product.discount_price }} €</span>
+                        <span class="ml-2 text-sm text-gray-500 line-through">{{ product.price }} €</span>
+                        {% else %}
+                        <span class="text-lg font-bold text-gray-900 dark:text-white">{{ product.price }} €</span>
+                        {% endif %}
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-500 dark:text-gray-400">
+                            Stock: {{ product.stock }}
+                        </span>
+                        <button class="bg-primary-500 text-white px-4 py-2 rounded-md hover:bg-primary-600 transition-colors">
+                            Ajouter au panier
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-12">
+                <div class="max-w-md mx-auto">
+                    <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 12h.01M12 12a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    <h3 class="text-xl text-gray-600 dark:text-gray-400 mb-2">
+                        Aucun produit disponible dans cette catégorie
+                    </h3>
+                    <p class="text-gray-500 dark:text-gray-500">
+                        Revenez plus tard pour découvrir nos nouveaux produits
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if products.paginator.num_pages > 1 %}
+        <div class="flex justify-center mt-8">
+            <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                {% if products.has_previous %}
+                <a href="?page={{ products.previous_page_number }}&sort={{ current_sort }}" 
+                   class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">Précédent</span>
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </a>
+                {% endif %}
+
+                {% for num in products.paginator.page_range %}
+                {% if num == products.number %}
+                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-primary-50 text-sm font-medium text-primary-600">
+                    {{ num }}
+                </span>
+                {% else %}
+                <a href="?page={{ num }}&sort={{ current_sort }}" 
+                   class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    {{ num }}
+                </a>
+                {% endif %}
+                {% endfor %}
+
+                {% if products.has_next %}
+                <a href="?page={{ products.next_page_number }}&sort={{ current_sort }}" 
+                   class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">Suivant</span>
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 
